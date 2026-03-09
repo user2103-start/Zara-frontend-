@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z.A.R.A — Zero-latency Artificial Responsive Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- PARTICLE BACKGROUND -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- GRID OVERLAY -->
+<div class="grid-overlay"></div>
+
+<!-- SCANLINE EFFECT -->
+<div class="scanlines"></div>
+
+<!-- TOP NAVIGATION -->
+<nav id="navbar">
+  <div class="nav-left">
+    <div class="logo-container">
+      <div class="logo-rings">
+        <span class="lr lr1"></span>
+        <span class="lr lr2"></span>
+      </div>
+      <div class="logo-text">
+        <span class="logo-main">Z.A.R.A</span>
+        <span class="logo-sub">ZERO-LATENCY ARTIFICIAL RESPONSIVE ASSISTANT</span>
+      </div>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="system-status" id="systemStatus">
+      <span class="status-dot" id="statusDot"></span>
+      <span class="status-text" id="statusText">SYSTEM ONLINE</span>
+    </div>
+    <div class="nav-divider"></div>
+    <button class="nav-btn" id="settingsBtn" title="Settings">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+    <div class="time-display" id="timeDisplay">00:00:00</div>
+  </div>
+</nav>
+
+<!-- MAIN INTERFACE -->
+<main id="main">
+
+  <!-- AI CORE SECTION -->
+  <section class="core-section" id="coreSection">
+    <div class="core-container">
+
+      <!-- ACTIVATION OVERLAY -->
+      <div class="activation-overlay" id="activationOverlay">
+        <div class="activation-rings">
+          <div class="act-ring act-ring-1"></div>
+          <div class="act-ring act-ring-2"></div>
+          <div class="act-ring act-ring-3"></div>
+          <div class="act-ring act-ring-4"></div>
+        </div>
+        <div class="activation-text">
+          <div class="act-line" id="actLine1">GESTURE DETECTED</div>
+          <div class="act-line" id="actLine2">ACTIVATING Z.A.R.A...</div>
+          <div class="act-line" id="actLine3">INITIALIZING NEURAL MATRIX</div>
+        </div>
+      </div>
+
+      <!-- AI CORE VISUAL -->
+      <div class="ai-core" id="aiCore">
+        <div class="core-outer-ring"></div>
+        <div class="core-mid-ring"></div>
+        <div class="core-inner-ring"></div>
+        <div class="core-rotating-ring rr1"></div>
+        <div class="core-rotating-ring rr2"></div>
+        <div class="core-rotating-ring rr3"></div>
+        <div class="core-nucleus">
+          <div class="nucleus-inner">
+            <div class="nucleus-particles" id="nucleusParticles"></div>
+            <div class="nucleus-center"></div>
+          </div>
+        </div>
+        <div class="core-data-points" id="coreDataPoints"></div>
+      </div>
+
+      <!-- STATUS TEXT -->
+      <div class="core-status">
+        <div class="status-line primary" id="coreStatusPrimary">SYSTEM ONLINE</div>
+        <div class="status-line secondary" id="coreStatusSecondary">LISTENING MODE — AWAITING COMMAND</div>
+        <div class="status-metrics">
+          <div class="metric">
+            <span class="metric-val" id="metricCpu">94</span>
+            <span class="metric-label">NEURAL</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric">
+            <span class="metric-val" id="metricMem">2.4TB</span>
+            <span class="metric-label">MEMORY</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric">
+            <span class="metric-val" id="metricLatency">0ms</span>
+            <span class="metric-label">LATENCY</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOICE VISUALIZER -->
+  <section class="viz-section reveal-section">
+    <div class="viz-header">
+      <span class="viz-label">AUDIO INPUT MATRIX</span>
+      <div class="viz-controls">
+        <button class="viz-btn active" id="micBtn" title="Microphone">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+          <span>LISTEN</span>
+        </button>
+        <button class="viz-btn" id="gestureBtn" title="Camera Gesture">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          <span>CAMERA</span>
+        </button>
+      </div>
+    </div>
+    <div class="voice-viz" id="voiceViz">
+      <div class="viz-bars" id="vizBars"></div>
+      <div class="viz-line"></div>
+    </div>
+  </section>
+
+  <!-- CAMERA GESTURE RECOGNITION PANEL -->
+  <section class="gesture-section reveal-section" id="gestureSection" style="display:none">
+    <div class="glass-panel gesture-panel">
+      <div class="panel-header">
+        <span class="panel-label">GESTURE RECOGNITION MATRIX</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="gesture-status-badge" id="gestureBadge">INITIALIZING</span>
+          <button class="viz-btn" id="closeGestureBtn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            <span>CLOSE</span>
+          </button>
+        </div>
+      </div>
+      <div class="gesture-body">
+        <div class="camera-container">
+          <video id="gestureVideo" autoplay playsinline muted></video>
+          <canvas id="gestureCanvas"></canvas>
+          <div class="camera-corners">
+            <span class="c-corner c-tl"></span>
+            <span class="c-corner c-tr"></span>
+            <span class="c-corner c-bl"></span>
+            <span class="c-corner c-br"></span>
+          </div>
+          <div class="cam-scan-line" id="camScanLine"></div>
+          <div class="detected-gesture-label" id="detectedLabel">SCANNING HANDS...</div>
+        </div>
+        <div class="gesture-guide">
+          <div class="guide-title">GESTURE COMMANDS</div>
+          <div class="gesture-list">
+            <div class="gesture-item" id="gi-palm">
+              <div class="g-num">01</div>
+              <div class="gesture-info">
+                <span class="gesture-name">OPEN PALM</span>
+                <span class="gesture-desc">Activate Z.A.R.A</span>
+              </div>
+              <span class="gesture-hotkey activate">ACTIVATE</span>
+            </div>
+            <div class="gesture-item" id="gi-fist">
+              <div class="g-num">02</div>
+              <div class="gesture-info">
+                <span class="gesture-name">CLOSED FIST</span>
+                <span class="gesture-desc">Stop / Silence</span>
+              </div>
+              <span class="gesture-hotkey stop">STOP</span>
+            </div>
+            <div class="gesture-item" id="gi-point">
+              <div class="g-num">03</div>
+              <div class="gesture-info">
+                <span class="gesture-name">INDEX POINT</span>
+                <span class="gesture-desc">Start voice input</span>
+              </div>
+              <span class="gesture-hotkey voice">VOICE</span>
+            </div>
+            <div class="gesture-item" id="gi-peace">
+              <div class="g-num">04</div>
+              <div class="gesture-info">
+                <span class="gesture-name">PEACE / V-SIGN</span>
+                <span class="gesture-desc">Focus command input</span>
+              </div>
+              <span class="gesture-hotkey input">INPUT</span>
+            </div>
+            <div class="gesture-item" id="gi-thumb">
+              <div class="g-num">05</div>
+              <div class="gesture-info">
+                <span class="gesture-name">THUMBS UP</span>
+                <span class="gesture-desc">Confirm last command</span>
+              </div>
+              <span class="gesture-hotkey confirm">OK</span>
+            </div>
+            <div class="gesture-item" id="gi-three">
+              <div class="g-num">06</div>
+              <div class="gesture-info">
+                <span class="gesture-name">THREE FINGERS</span>
+                <span class="gesture-desc">Clear history</span>
+              </div>
+              <span class="gesture-hotkey clear">CLEAR</span>
+            </div>
+          </div>
+          <div class="confidence-bar-wrap">
+            <span class="conf-label">DETECTION CONFIDENCE</span>
+            <div class="confidence-track">
+              <div class="confidence-fill" id="confidenceFill"></div>
+            </div>
+            <span class="confidence-val" id="confidenceVal">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMAND PANEL -->
+  <section class="command-section reveal-section">
+    <div class="command-panel glass-panel">
+      <div class="panel-header">
+        <span class="panel-label">COMMAND INTERFACE</span>
+        <div class="panel-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="command-input-row">
+        <div class="input-wrapper">
+          <div class="input-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+            </svg>
+          </div>
+          <input
+            type="text"
+            id="commandInput"
+            class="command-input"
+            placeholder="Enter command or query..."
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <div class="input-glow"></div>
+        </div>
+        <button class="exec-btn magnetic-btn" id="execBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          <span>EXECUTE</span>
+        </button>
+      </div>
+      <!-- AI RESPONSE DISPLAY -->
+      <div class="ai-response glass-inner" id="aiResponse">
+        <div class="response-cursor" id="responseCursor"></div>
+        <div class="response-text" id="responseText">Z.A.R.A ready. Awaiting command input...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN GRID: HISTORY + FEATURES + MEMORY -->
+  <div class="main-grid">
+
+    <!-- COMMAND HISTORY -->
+    <section class="history-section reveal-section">
+      <div class="glass-panel full-height">
+        <div class="panel-header">
+          <span class="panel-label">COMMAND HISTORY</span>
+          <button class="clear-btn" id="clearHistoryBtn">CLEAR</button>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="history-empty" id="historyEmpty">
+            <div class="empty-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <span>No commands executed</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE CONTROLS -->
+    <section class="features-section reveal-section">
+      <div class="glass-panel">
+        <div class="panel-header">
+          <span class="panel-label">QUICK CONTROLS</span>
+        </div>
+        <div class="feature-grid">
+          <button class="feature-btn magnetic-btn" data-action="call" title="Call Contact">
+            <div class="feature-icon-wrap">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <span>CALL</span>
+          </button>
+          <button class="feature-btn magnetic-btn" data-action="alarm" title="Set Alarm">
+            <div class="feature-icon-wrap">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/>
+                <path d="M5 3 2 6M22 6l-3-3M6.38 18.7 4 21M17.64 18.67 20 21"/>
+              </svg>
+            </div>
+            <span>ALARM</span>
+          </button>
+          <button class="feature-btn magnetic-btn" data-action="note" title="Create Note">
+            <div class="feature-icon-wrap">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+            </div>
+            <span>NOTE</span>
+          </button>
+          <button class="feature-btn magnetic-btn" data-action="search" title="Search Web">
+            <div class="feature-icon-wrap">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </div>
+            <span>SEARCH</span>
+          </button>
+          <button class="feature-btn magnetic-btn" data-action="apps" title="Open Apps">
+            <div class="feature-icon-wrap">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
+            <span>APPS</span>
+          </button>
+          <button class="feature-btn magnetic-btn" data-action="music" title="Play Music">
+            <div class="feature-icon-wrap">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+              </svg>
+            </div>
+            <span>MUSIC</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEMORY SYSTEM -->
+    <section class="memory-section reveal-section">
+      <div class="glass-panel full-height">
+        <div class="panel-header">
+          <span class="panel-label">MEMORY MATRIX</span>
+          <span class="memory-count" id="memoryCount">0 NODES</span>
+        </div>
+        <div class="memory-list" id="memoryList">
+          <div class="memory-empty" id="memoryEmpty">
+            <div class="empty-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+              </svg>
+            </div>
+            <span>Memory matrix empty</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- end main-grid -->
+
+</main>
+
+<!-- ERROR TOAST -->
+<div class="error-toast" id="errorToast">
+  <div class="error-icon">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  </div>
+  <span class="error-msg" id="errorMsg">Error message</span>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-panel glass-panel">
+    <div class="modal-header">
+      <span class="panel-label">SYSTEM CONFIGURATION</span>
+      <button class="modal-close" id="modalClose">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="settings-list">
+      <div class="setting-item">
+        <span class="setting-label">AI Backend URL</span>
+        <input type="text" class="setting-input" id="backendUrl" placeholder="http://localhost:5000" value="">
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">Voice Activation</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="voiceToggle" checked>
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">Gesture Detection</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="gestureToggle">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <span class="setting-label">Particle Effects</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="particleToggle" checked>
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </label>
+      </div>
+    </div>
+    <button class="exec-btn magnetic-btn" style="width:100%;margin-top:16px" id="saveSettings">SAVE CONFIGURATION</button>
+  </div>
+</div>
+
+<!-- NOTE MODAL -->
+<div class="modal-overlay" id="noteModal">
+  <div class="modal-panel glass-panel">
+    <div class="modal-header">
+      <span class="panel-label">CREATE NOTE</span>
+      <button class="modal-close" id="noteModalClose">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <textarea class="note-input" id="noteInput" placeholder="Enter note content..."></textarea>
+    <button class="exec-btn magnetic-btn" style="width:100%;margin-top:12px" id="saveNote">SAVE TO MEMORY</button>
+  </div>
+</div>
+
+<!-- ALARM MODAL -->
+<div class="modal-overlay" id="alarmModal">
+  <div class="modal-panel glass-panel">
+    <div class="modal-header">
+      <span class="panel-label">SET ALARM</span>
+      <button class="modal-close" id="alarmModalClose">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="setting-item" style="flex-direction:column;align-items:flex-start;gap:8px">
+      <span class="setting-label">Alarm Time</span>
+      <input type="time" class="setting-input" id="alarmTime" style="width:100%">
+    </div>
+    <div class="setting-item" style="flex-direction:column;align-items:flex-start;gap:8px;margin-top:12px">
+      <span class="setting-label">Label</span>
+      <input type="text" class="setting-input" id="alarmLabel" placeholder="Alarm label..." style="width:100%">
+    </div>
+    <button class="exec-btn magnetic-btn" style="width:100%;margin-top:16px" id="saveAlarm">SET ALARM</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
